@@ -42,10 +42,11 @@ public class DefaultControllMovementModel : ICharacterMovementModel
         _isCeiled = LarjeUtility.CastCollider2D(_collider, Vector2.up, 0.1f);
         _characterPosition = characterPosition;
 
-
+        float horizontalSpeed = 0f;
+        Vector2 resultPosition;
         if (_jumpTween == null)
         {
-            float speed = _speedPercent * (Input.GetKey(KeyCode.LeftShift) ? _config.FullRunSpeed : _config.FullWalkSpeed);
+            horizontalSpeed = _speedPercent * (Input.GetKey(KeyCode.LeftShift) ? _config.FullRunSpeed : _config.FullWalkSpeed);
             if (_isGrounded)
             {
                 _verticalSpeed = 0f;
@@ -54,7 +55,7 @@ public class DefaultControllMovementModel : ICharacterMovementModel
             {
                 _verticalSpeed -= 9.8f * _config.GravityScale * deltaTime;
             }
-            return characterPosition + new Vector2(speed, _verticalSpeed) * deltaTime;
+            resultPosition = characterPosition + new Vector2(horizontalSpeed, _verticalSpeed) * deltaTime;
         }
         else
         {
@@ -68,9 +69,31 @@ public class DefaultControllMovementModel : ICharacterMovementModel
             {
                 _jumpSpeed += _config.JumpHorizontalSpeedControll * deltaTime;
             }
+            if (LarjeUtility.CastCollider2D(_collider, (Vector2.right * _jumpSpeed).normalized, Mathf.Abs(_jumpSpeed * deltaTime))) 
+            {
+                _jumpSpeed = 0f;
+            }
             _jumpSpeed = Mathf.Clamp(_jumpSpeed, -_config.FullRunSpeed, _config.FullRunSpeed);
-            return new Vector2(characterPosition.x + _jumpSpeed * deltaTime, _jumpValue);
+            horizontalSpeed = _jumpSpeed;
+            resultPosition = new Vector2(characterPosition.x + _jumpSpeed * deltaTime, _jumpValue);
         }
+
+        if (LarjeUtility.CastCollider2D(_collider, (Vector2.right * horizontalSpeed).normalized, Mathf.Abs(horizontalSpeed * deltaTime)))
+        {
+            Vector2 raycastOrigin = _collider.transform.position;
+            raycastOrigin.x += ((_collider.bounds.size.x / 2f) + 0.1f) * (horizontalSpeed < 0 ? -1 : 1);
+            raycastOrigin.y += _collider.bounds.size.y + _config.StairHeight;
+            RaycastHit2D hit = Physics2D.Raycast(raycastOrigin, Vector2.down);
+            float distanceToStair = Mathf.Abs(hit.point.y - _collider.transform.position.y);
+            if (hit.point.y > _collider.transform.position.y && distanceToStair <= _config.StairHeight)
+            {
+                resultPosition.y = hit.point.y;
+                _collider.gameObject.transform.position = resultPosition;
+            }
+            Debug.DrawLine(raycastOrigin, hit.point, Color.red); 
+        }
+
+        return resultPosition;
     }
 
     public SpriteAnimationInfo ComputeAnimation()
@@ -81,7 +104,9 @@ public class DefaultControllMovementModel : ICharacterMovementModel
         bool lookRight = Camera.main.ScreenToWorldPoint(Input.mousePosition).x > _collider.transform.position.x;
         _collider.transform.localScale = new Vector3(lookRight ? 1 : -1, 1, 1);
 
-        if (_isGrounded && (_runLeftTween != null || _runRightTween != null))
+        bool isNearToFloor = LarjeUtility.CastCollider2D(_collider, Vector2.down, _config.StairHeight);
+
+        if ((_isGrounded && (_runLeftTween != null || _runRightTween != null)) || (!_isGrounded && isNearToFloor && _jumpTween == null))
         {
             if ((_runLeftTween != null && lookRight) || (_runRightTween != null && !lookRight)) 
             {
@@ -99,7 +124,14 @@ public class DefaultControllMovementModel : ICharacterMovementModel
         }
         else if (!_isGrounded)
         {
-            anim.AnimationType = PlayerAnimationType.Jump;
+            if (_verticalSpeed > 0)
+            {
+                anim.AnimationType = PlayerAnimationType.Jump;
+            }
+            else if (_verticalSpeed < 0)
+            {
+                anim.AnimationType = PlayerAnimationType.Fall;
+            }
         }
         else 
         {

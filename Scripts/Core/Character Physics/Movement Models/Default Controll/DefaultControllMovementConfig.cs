@@ -20,4 +20,7 @@ public class DefaultControllMovementConfig : ScriptableObject
     public AnimationCurve JumpCurve;
     public float JumpHorizontalSpeedControll;
     public float GravityScale;
+
+    [Header("Stairs")]
+    public float StairHeight;
 }
