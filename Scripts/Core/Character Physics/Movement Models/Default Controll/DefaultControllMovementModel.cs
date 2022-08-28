@@ -73,26 +73,40 @@ public class DefaultControllMovementModel : ICharacterMovementModel
         }
     }
 
-    public PlayerAnimationType ComputeAnimation()
+    public SpriteAnimationInfo ComputeAnimation()
     {
+        SpriteAnimationInfo anim = new SpriteAnimationInfo();
+        anim.ForwardDirection = true;
+
+        bool lookRight = Camera.main.ScreenToWorldPoint(Input.mousePosition).x > _collider.transform.position.x;
+        _collider.transform.localScale = new Vector3(lookRight ? 1 : -1, 1, 1);
+
         if (_isGrounded && (_runLeftTween != null || _runRightTween != null))
         {
+            if ((_runLeftTween != null && lookRight) || (_runRightTween != null && !lookRight)) 
+            {
+                anim.ForwardDirection = false;
+            }
+
             if (Input.GetKey(KeyCode.LeftShift))
             {
-                return PlayerAnimationType.Run;
+                anim.AnimationType = PlayerAnimationType.Run;
             }
-            else 
+            else
             {
-                return PlayerAnimationType.Walk; 
+                anim.AnimationType = PlayerAnimationType.Walk;
             }
         }
-
-        if (!_isGrounded) 
+        else if (!_isGrounded)
         {
-            return PlayerAnimationType.Jump;
+            anim.AnimationType = PlayerAnimationType.Jump;
+        }
+        else 
+        {
+            anim.AnimationType = PlayerAnimationType.Idle;            
         }
 
-        return PlayerAnimationType.Idle;
+        return anim;
     }
 
     private void OnKeyDown(KeyCode key) 

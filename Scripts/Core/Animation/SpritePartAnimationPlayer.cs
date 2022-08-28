@@ -8,16 +8,16 @@ public class SpritePartAnimationPlayer : MonoBehaviour
     [SerializeField] private SpritePartAnimation _partAnimation;
 
     private int _currentFrame = 0;
-    private CharacterAnimation _characterAnimation;
+    private IAnimationProcessor _characterAnimation;
     private SpriteRenderer _spriteRenderer;
-    private PlayerAnimationType _currentAnim;
+    private SpriteAnimationInfo _currentAnim;
 
 
     private void Start()
     {
-        _characterAnimation = GetComponentInParent<CharacterAnimation>();
+        _characterAnimation = GetComponentInParent<IAnimationProcessor>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
-        _currentAnim = _characterAnimation.PlayingAnimation;
+        _currentAnim = _characterAnimation.GetAnimationInfo();
     }
 
     private void OnEnable()
@@ -38,16 +38,16 @@ public class SpritePartAnimationPlayer : MonoBehaviour
             return;
         }
 
-        if (_currentAnim != _characterAnimation.PlayingAnimation) 
+        if (_currentAnim.AnimationType != _characterAnimation.GetAnimationInfo().AnimationType) 
         {
-            _currentAnim = _characterAnimation.PlayingAnimation;
+            _currentAnim = _characterAnimation.GetAnimationInfo();
             _currentFrame = 0;
         }
 
-        Sprite[] animationSprites = _partAnimation.GetAnimationByType(_currentAnim);
-        if (_currentFrame > animationSprites.Length - 1 && (_characterAnimation.ForwardAnimationDirection || (_currentAnim == PlayerAnimationType.Jump || _currentAnim == PlayerAnimationType.Fall)))
+        Sprite[] animationSprites = _partAnimation.GetAnimationByType(_currentAnim.AnimationType);
+        if (_currentFrame > animationSprites.Length - 1 && (_characterAnimation.GetAnimationInfo().ForwardDirection || (_currentAnim.AnimationType == PlayerAnimationType.Jump || _currentAnim.AnimationType == PlayerAnimationType.Fall)))
         {
-            if (_currentAnim == PlayerAnimationType.Jump || _currentAnim == PlayerAnimationType.Fall)
+            if (_currentAnim.AnimationType == PlayerAnimationType.Jump || _currentAnim.AnimationType == PlayerAnimationType.Fall)
             {
                 _currentFrame = animationSprites.Length - 1;
             }
@@ -56,7 +56,7 @@ public class SpritePartAnimationPlayer : MonoBehaviour
                 _currentFrame = 0;
             }
         }
-        else if (_currentFrame < 0 && !_characterAnimation.ForwardAnimationDirection) 
+        else if (_currentFrame < 0 && !_characterAnimation.GetAnimationInfo().ForwardDirection) 
         {
             _currentFrame = animationSprites.Length - 1;
         }
@@ -69,7 +69,7 @@ public class SpritePartAnimationPlayer : MonoBehaviour
         while (true) 
         {
             yield return new WaitForSeconds(1f / _framesPerSecond);
-            if (_characterAnimation.ForwardAnimationDirection || (_currentAnim == PlayerAnimationType.Jump || _currentAnim == PlayerAnimationType.Fall))
+            if (_characterAnimation.GetAnimationInfo().ForwardDirection || (_currentAnim.AnimationType == PlayerAnimationType.Jump || _currentAnim.AnimationType == PlayerAnimationType.Fall))
             {
                 _currentFrame++;
             }

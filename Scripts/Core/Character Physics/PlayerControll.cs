@@ -5,18 +5,16 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(CapsuleCollider2D))]
 [RequireComponent(typeof(TargetJoint2D))]
-public class PlayerControll : MonoBehaviour
+public class PlayerControll : MonoBehaviour, IAnimationProcessor
 {
     [SerializeField] private DefaultControllMovementConfig _movementConfig;
     [SerializeField] private LayerMask _raycastContactLayers;
 
-    private ICharacterMovementModel _currentMovementModel;
     private Rigidbody2D _rigidbody;
     private CapsuleCollider2D _boxCollider;
     private TargetJoint2D _targetJoint;
-
-    public PlayerAnimationType Animation { get; private set; }
-    
+    private SpriteAnimationInfo _animationInfo;
+    private ICharacterMovementModel _currentMovementModel;
 
 
     private void Awake()
@@ -31,6 +29,12 @@ public class PlayerControll : MonoBehaviour
     private void FixedUpdate()
     {
         _targetJoint.target = _currentMovementModel.ComputePosition(transform.position, Time.fixedDeltaTime);
-        Animation = _currentMovementModel.ComputeAnimation();
+        _animationInfo = _currentMovementModel.ComputeAnimation();
+    }
+
+
+    public SpriteAnimationInfo GetAnimationInfo()
+    {
+        return _animationInfo;
     }
 }
