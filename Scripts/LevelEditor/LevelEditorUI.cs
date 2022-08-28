@@ -13,6 +13,7 @@ public class LevelEditorUI : MonoBehaviour
     [SerializeField] private List<BlockInformation> _blockList;
 
     public bool IsClosed => !transform.GetChild(0).gameObject.activeSelf;
+    public Action OnButtonSavePressed;
     public Action<BlockInformation> OnBlockChoosed;
 
 

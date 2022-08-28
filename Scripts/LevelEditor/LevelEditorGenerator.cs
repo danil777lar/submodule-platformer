@@ -6,6 +6,7 @@ using CoverSide = BlockInformation.CoverSide;
 public class LevelEditorGenerator : MonoBehaviour
 {
     [SerializeField] private LevelEditorUI _ui;
+    [SerializeField] private GameObject _levelRoot;
     [SerializeField] private Transform _frontLayer;
     [SerializeField] private Transform _backLayer;
     [SerializeField] private Transform _propLayer;
@@ -23,6 +24,7 @@ public class LevelEditorGenerator : MonoBehaviour
     {
         _camera = Camera.main;
         _ui.OnBlockChoosed += (block) => _currentBlock = block;
+        _ui.OnButtonSavePressed += SaveLevel;
         _blockPreview = new GameObject("Block Preview").AddComponent<SpriteRenderer>();
         _blockPreview.color = new Color(1f, 1f, 1f, 0.5f);
     }
@@ -70,6 +72,11 @@ public class LevelEditorGenerator : MonoBehaviour
         blockInstance.transform.SetParent(parent);
         blockInstance.transform.position = curentPosition;
         blockInstance.transform.localPosition = new Vector3(blockInstance.transform.localPosition.x, blockInstance.transform.localPosition.y, 0f);
+        if (parent == _frontLayer)
+        {
+            BoxCollider2D collider = blockInstance.AddComponent<BoxCollider2D>();
+            collider.size = Vector2.one;
+        }
         blocks.Add(curentPosition, blockInstance);
 
         if (rebuildNeighbours) 
@@ -89,5 +96,10 @@ public class LevelEditorGenerator : MonoBehaviour
         if (!blocks.ContainsKey(position + Vector2.left)) sides |= CoverSide.Left;
         if (!blocks.ContainsKey(position + Vector2.right)) sides |= CoverSide.Right;
         return sides;
+    }
+
+    private void SaveLevel() 
+    {
+        
     }
 }
