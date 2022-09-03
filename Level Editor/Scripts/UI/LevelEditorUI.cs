@@ -28,6 +28,8 @@ public class LevelEditorUI : MonoBehaviour
     public RectTransform Root => _root;
     public RectTransform WorkField => (RectTransform)_workField.transform;
 
+    public Action CurentItemChanged;
+
 
     private void Awake()
     {
@@ -51,16 +53,27 @@ public class LevelEditorUI : MonoBehaviour
     public void SetCurentItem(LevelEditorItem item) 
     {
         _levelEditors[_curentLevelEditor].CurrentItem = item;
+        CurentItemChanged?.Invoke();
     }
 
-    public void SetCurentTool(LevelEditorGenerator.LevelEditorToolType tool)
+    public void SetCurentTool(LevelEditorToolType tool)
     {
         _levelEditors[_curentLevelEditor].CurrentTool = tool;
     }
 
-    public LevelEditorGenerator.LevelEditorToolType GetCurentTool() 
+    public void SetThicknes(int thicknes) 
+    {
+        _levelEditors[_curentLevelEditor].Thicknes = thicknes;
+    }
+
+    public LevelEditorToolType GetCurentTool() 
     {
         return _levelEditors[_curentLevelEditor].CurrentTool;
+    }
+
+    public LevelEditorItem GetCurentItem() 
+    {
+        return _levelEditors[_curentLevelEditor].CurrentItem;
     }
 
 

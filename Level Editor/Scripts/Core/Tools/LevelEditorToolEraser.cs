@@ -11,9 +11,19 @@ public class LevelEditorToolEraser : LevelEditorTool
     {
         Vector2Int position = LarjeUtility.FloorVector2(_camera.ScreenToWorldPoint(Input.mousePosition));
         List<Vector2Int> points = new List<Vector2Int>();
+        points.Add(position);
 
+        if (Input.GetMouseButton(0))
+        {
+            foreach (Vector2Int point in points)
+            {
+                foreach (LevelEditorItem item in _instancedItems.FindAll((item) => item.GetEngagedCells(item.Position).Contains(point)))
+                {
+                    item.Remove(_instancedItems);
+                }
+            }
+        }
 
-
-        LevelEditorItemPreviewDrawer.Instance.UpdatePreview(args, _instancedItems, points);
+        LevelEditorItemPreviewDrawer.Instance.ClearPreview();
     }
 }

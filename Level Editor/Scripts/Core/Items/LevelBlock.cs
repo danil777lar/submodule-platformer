@@ -30,6 +30,16 @@ public class LevelBlock : LevelEditorItem
         ((LevelBlock)spawnedItems.Find((item) => IsNeighbourBlock(item, Vector2Int.left)))?.RecalculateSideCovers(spawnedItems);
     }
 
+    public override void Remove(List<LevelEditorItem> spawnedItems)
+    {
+        spawnedItems.Remove(this);
+        ((LevelBlock)spawnedItems.Find((item) => IsNeighbourBlock(item, Vector2Int.up)))?.RecalculateSideCovers(spawnedItems);
+        ((LevelBlock)spawnedItems.Find((item) => IsNeighbourBlock(item, Vector2Int.right)))?.RecalculateSideCovers(spawnedItems);
+        ((LevelBlock)spawnedItems.Find((item) => IsNeighbourBlock(item, Vector2Int.down)))?.RecalculateSideCovers(spawnedItems);
+        ((LevelBlock)spawnedItems.Find((item) => IsNeighbourBlock(item, Vector2Int.left)))?.RecalculateSideCovers(spawnedItems);
+        Destroy(gameObject);
+    }
+
     public override bool CanBePlaced(List<LevelEditorItem> spawnedItems, Vector2Int position)
     {
         foreach (LevelEditorItem item in spawnedItems.FindAll((item) => item.LevelLayer == _levelLayer)) 
@@ -52,15 +62,15 @@ public class LevelBlock : LevelEditorItem
 
     public void RecalculateSideCovers(List<LevelEditorItem> spawnedItems) 
     {
-        _topCover.gameObject.SetActive(!spawnedItems.Find((item) => (item is LevelBlock) && item.Position == Position + Vector2Int.up));
-        _rightCover.gameObject.SetActive(!spawnedItems.Find((item) => (item is LevelBlock) && item.Position == Position + Vector2Int.right));
-        _bottomCover.gameObject.SetActive(!spawnedItems.Find((item) => (item is LevelBlock) && item.Position == Position + Vector2Int.down));
-        _leftCover.gameObject.SetActive(!spawnedItems.Find((item) => (item is LevelBlock) && item.Position == Position + Vector2Int.left));
+        _topCover.gameObject.SetActive(!spawnedItems.Find((item) => IsNeighbourBlock(item, Vector2Int.up)));
+        _rightCover.gameObject.SetActive(!spawnedItems.Find((item) => IsNeighbourBlock(item, Vector2Int.right)));
+        _bottomCover.gameObject.SetActive(!spawnedItems.Find((item) => IsNeighbourBlock(item, Vector2Int.down)));
+        _leftCover.gameObject.SetActive(!spawnedItems.Find((item) => IsNeighbourBlock(item, Vector2Int.left)));
     }
 
     private bool IsNeighbourBlock(LevelEditorItem item, Vector2Int direction) 
     {
-
         return (item is LevelBlock) && ((LevelBlock)item).IsWall == _isWall && item.Position == Position + direction;
     }
+
 }

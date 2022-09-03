@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,19 +6,10 @@ using Larje.Core.Utility;
 
 public class LevelEditorGenerator
 {
-    public enum LevelEditorToolType 
-    {
-        Brush, 
-        Eraser,
-        Line,
-        Rect, 
-        FilledRect
-    }
-
     public bool ControllEnabled;
     public int Thicknes = 1;
     public LevelEditorItem CurrentItem;
-    public LevelEditorToolType CurrentTool;
+    public LevelEditorToolType CurrentTool = LevelEditorToolType.Brush;
 
     private GameObject _levelHolder;
     private List<LevelEditorItem> _instancedItems;

@@ -6,8 +6,12 @@ public abstract class LevelEditorItem : MonoBehaviour
 {
     [SerializeField] protected int _levelLayer;
     [SerializeField] protected Vector2Int _size;
+    [SerializeField] protected ItemAvailableTools _availableTools;
+
     public int LevelLayer => _levelLayer;
     public Vector2Int Position { get; protected set; }
+    public ItemAvailableTools AvailableTools => _availableTools;
+
 
 
     protected void OnValidate()
@@ -32,6 +36,7 @@ public abstract class LevelEditorItem : MonoBehaviour
 
 
     abstract public void Place(List<LevelEditorItem> spawnedItems, Vector2Int position);
+    abstract public void Remove(List<LevelEditorItem> spawnedItems);
     abstract public bool CanBePlaced(List<LevelEditorItem> spawnedItems, Vector2Int position);
     abstract public Sprite GetPreview();
 }

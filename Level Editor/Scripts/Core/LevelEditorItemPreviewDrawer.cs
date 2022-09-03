@@ -15,10 +15,7 @@ public class LevelEditorItemPreviewDrawer : MonoBehaviour
 
     public void UpdatePreview(LevelEditorToolArgs args, List<LevelEditorItem> spawnedItems, List<Vector2Int> points) 
     {
-        while (transform.childCount > 0) 
-        {
-            DestroyImmediate(transform.GetChild(0).gameObject);
-        }
+        ClearPreview();
 
         if (args.controllEnabled && args.curentItem)
         {
@@ -30,6 +27,14 @@ public class LevelEditorItemPreviewDrawer : MonoBehaviour
                 itemPreview.sprite = args.curentItem.GetPreview();
                 itemPreview.color = args.curentItem.CanBePlaced(spawnedItems, point) ? Color.green : Color.red;
             }
+        }
+    }
+
+    public void ClearPreview() 
+    {
+        while (transform.childCount > 0)
+        {
+            DestroyImmediate(transform.GetChild(0).gameObject);
         }
     }
 }
