@@ -4,7 +4,9 @@ using UnityEngine;
 
 public abstract class LevelEditorItem : MonoBehaviour
 {
+    [SerializeField] protected int _levelLayer;
     [SerializeField] protected Vector2Int _size;
+    public int LevelLayer => _levelLayer;
     public Vector2Int Position { get; protected set; }
 
 
