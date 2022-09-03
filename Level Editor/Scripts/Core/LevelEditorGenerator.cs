@@ -15,6 +15,7 @@ public class LevelEditorGenerator
     }
 
     public bool ControllEnabled;
+    public int Thicknes = 1;
     public LevelEditorItem CurrentItem;
     public LevelEditorToolType CurrentTool;
 
@@ -26,6 +27,7 @@ public class LevelEditorGenerator
     public LevelEditorGenerator()
     {
         _levelHolder = new GameObject("New Level");
+        _instancedItems = new List<LevelEditorItem>();
 
         _tools = new Dictionary<LevelEditorToolType, LevelEditorTool>();
         _tools.Add(LevelEditorToolType.Brush, new LevelEditorToolBrush(_instancedItems, _levelHolder));
@@ -37,6 +39,11 @@ public class LevelEditorGenerator
 
     public void ComputeTool()
     {
-        _tools[CurrentTool].ComputeTool(CurrentItem, ControllEnabled);
+        LevelEditorToolArgs args;
+        args.controllEnabled = ControllEnabled;
+        args.curentItem = CurrentItem;
+        args.thicknes = Thicknes;
+
+        _tools[CurrentTool].ComputeTool(args);
     }
 }

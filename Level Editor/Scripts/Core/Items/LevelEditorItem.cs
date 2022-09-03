@@ -5,7 +5,7 @@ using UnityEngine;
 public abstract class LevelEditorItem : MonoBehaviour
 {
     [SerializeField] protected Vector2Int _size;
-    public Vector2Int Position { get; private set; }
+    public Vector2Int Position { get; protected set; }
 
 
     protected void OnValidate()
@@ -29,7 +29,7 @@ public abstract class LevelEditorItem : MonoBehaviour
     }
 
 
-    abstract public void Place();
-    abstract public bool CanBePlaced();
+    abstract public void Place(List<LevelEditorItem> spawnedItems, Vector2Int position);
+    abstract public bool CanBePlaced(List<LevelEditorItem> spawnedItems, Vector2Int position);
     abstract public Sprite GetPreview();
 }
