@@ -2648,9 +2648,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4f1fe4ef41eb194a93ddd65b877c656, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _customSprite: {fileID: 21300000, guid: 8f5182c047962854db01c9eacc1f94e8, type: 3}
-  _availableColor: {r: 0.29592764, g: 0.42745098, b: 0.2564706, a: 1}
-  _notAvailableColor: {r: 0.475, g: 0.285, b: 0.285, a: 1}
+  _defaultOptions:
+    Sprite: {fileID: 21300000, guid: 565f2c915a0d05f4ea4d4765f2354ce7, type: 3}
+    AvailableColor: {r: 0, g: 0, b: 0, a: 0.5019608}
+    NotAvailableColor: {r: 1, g: 0.4, b: 0.4, a: 1}
+  _eraserOptions:
+    Sprite: {fileID: 21300000, guid: b18084bf554338c4792e5746bda0ccaf, type: 3}
+    AvailableColor: {r: 0, g: 0, b: 0, a: 0.101960786}
+    NotAvailableColor: {r: 1, g: 0.4, b: 0.4, a: 1}
 --- !u!4 &1992324672
 Transform:
   m_ObjectHideFlags: 0

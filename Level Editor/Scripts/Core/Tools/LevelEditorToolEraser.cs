@@ -26,6 +26,6 @@ public class LevelEditorToolEraser : LevelEditorTool
             }
         }
 
-        LevelEditorItemPreviewDrawer.Instance.ClearPreview();
+        LevelEditorItemPreviewDrawer.Instance.UpdatePreview(args, _instancedItems, points, LevelEditorItemPreviewDrawer.Instance.EraserOptions);
     }
 }
