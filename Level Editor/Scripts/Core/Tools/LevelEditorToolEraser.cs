@@ -10,8 +10,7 @@ public class LevelEditorToolEraser : LevelEditorTool
     public override void ComputeTool(LevelEditorToolArgs args)
     {
         Vector2Int position = LarjeUtility.FloorVector2(_camera.ScreenToWorldPoint(Input.mousePosition));
-        List<Vector2Int> points = new List<Vector2Int>();
-        points.Add(position);
+        List<Vector2Int> points = LarjeUtility.GetPixelsInRange(position, args.thicknes);
 
         if (Input.GetMouseButton(0))
         {
@@ -19,7 +18,10 @@ public class LevelEditorToolEraser : LevelEditorTool
             {
                 foreach (LevelEditorItem item in _instancedItems.FindAll((item) => item.GetEngagedCells(item.Position).Contains(point)))
                 {
-                    item.Remove(_instancedItems);
+                    if (item.LevelLayer == args.curentItem.LevelLayer)
+                    {
+                        item.Remove(_instancedItems);
+                    }
                 }
             }
         }

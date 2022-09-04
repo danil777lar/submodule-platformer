@@ -56,14 +56,17 @@ public class LevelEditorInventoryTab : MonoBehaviour
         position.x = Mathf.Clamp(transform.position.x, _inventoryInstance.sizeDelta.x / 2f, Screen.width - (_inventoryInstance.sizeDelta.x / 2f));
         position.y = transform.parent.position.y + ((RectTransform)transform.parent).sizeDelta.y;
         _inventoryInstance.position = position;
+        _inventoryInstance.GetComponentInChildren<TextMeshProUGUI>().text = _itemGroup.GroupName;
+        _inventoryInstance.GetComponentInChildren<Button>().onClick.AddListener(CloseTab);
 
         ScrollRect scroll = _inventoryInstance.GetComponentInChildren<ScrollRect>();
         foreach (LevelEditorItem item in _itemGroup.Items) 
         {
             Button itemButtonInstance = Instantiate(_itemButtonPrefab, scroll.content);
             itemButtonInstance.onClick.AddListener(() => _mainUI.SetCurentItem(item));
-            itemButtonInstance.GetComponentInChildren<Image>().sprite = item.GetPreview();
             itemButtonInstance.GetComponentInChildren<TextMeshProUGUI>(true).text = item.gameObject.name;
+            List<Image> images = new List<Image>(itemButtonInstance.GetComponentsInChildren<Image>());
+            images.Find((image) => image.gameObject.name == "Icon").sprite = item.GetPreview();
         }
     }
 

@@ -15,6 +15,9 @@ public class LevelEditroToolTab : MonoBehaviour, IPointerEnterHandler, IPointerE
     [SerializeField] private Image _image;
     [SerializeField] private RectTransform _thicknesRoot;
     [SerializeField] private TextMeshProUGUI _thicknesText;
+    [SerializeField] private Slider _thicknesSlider;
+    [Header("Visual")]
+    [SerializeField] private Color _selectedColor;
 
     private bool _pointerHover;
     private int _thicknes = 1;
@@ -31,7 +34,8 @@ public class LevelEditroToolTab : MonoBehaviour, IPointerEnterHandler, IPointerE
 
     private void Update()
     {
-        _image.color = _mainUI.GetCurentTool() == _toolType ? Color.gray : Color.white;
+        Color targetColor = _mainUI.GetCurentTool() == _toolType ? _selectedColor : Color.white;
+        _image.color = Color.Lerp(_image.color, targetColor, Time.deltaTime * 5f);
         UpdateThicknesUI();
     }
 
@@ -51,6 +55,7 @@ public class LevelEditroToolTab : MonoBehaviour, IPointerEnterHandler, IPointerE
             _thicknes = Mathf.Clamp(_thicknes, 1, 10);
             _mainUI.SetThicknes(_thicknes);
 
+            _thicknesSlider.value = _thicknes;
             _thicknesText.text = _thicknes.ToString();
         }
         else 
