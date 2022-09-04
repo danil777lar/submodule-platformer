@@ -23,7 +23,7 @@ public class LevelEditorItemPreviewDrawer : MonoBehaviour
             {
                 SpriteRenderer itemPreview = new GameObject("Item Preview").AddComponent<SpriteRenderer>();
                 itemPreview.transform.SetParent(transform);
-                itemPreview.transform.position = (Vector2)point;
+                itemPreview.transform.position = new Vector3(point.x, point.y, -10);
                 itemPreview.sprite = args.curentItem.GetPreview();
                 itemPreview.color = args.curentItem.CanBePlaced(spawnedItems, point) ? Color.green : Color.red;
             }
