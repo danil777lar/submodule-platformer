@@ -6,11 +6,10 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 using Larje.Core.Services.UI;
+using Larje.Core.Services;
 
 public class LevelEditorUI : MonoBehaviour
 {
-    [SerializeField] private LevelEditorItemsDB _itemsDB;
-
     [Header("Links")]
     [SerializeField] private LevelEditorCamera _levelEditorCamera;
 
@@ -22,7 +21,12 @@ public class LevelEditorUI : MonoBehaviour
     [SerializeField] private RectTransform _inventoryPanel;
     [SerializeField] private LevelEditorInventoryTab _tabPrefab;
 
+    [Header("Toolbar Buttons")]
+    [SerializeField] private Button _buttonSave;
+    [SerializeField] private Button _buttonLoad;
+
     private int _curentLevelEditor = 0;
+    private LevelEditorLoader _levelLoader;
     private List<LevelEditorGenerator> _levelEditors;
 
     public RectTransform Root => _root;
@@ -35,13 +39,32 @@ public class LevelEditorUI : MonoBehaviour
     {
         _levelEditors = new List<LevelEditorGenerator>();
         _levelEditors.Add(new LevelEditorGenerator());
+        _levelEditors[_curentLevelEditor].Enabled = true;
     }
 
     private void Start()
     {
+        _levelLoader = ServiceLocator.Default.GetService<LevelEditorLoader>();
+
         BuildInventoryTabs();
         _workField.PointerEnter += (data) => OnPointerStateChanged(true);
         _workField.PointerExit += (data) => OnPointerStateChanged(false);
+
+        _buttonSave.onClick.AddListener(() => 
+        {
+            _levelLoader.SaveLevel(_levelEditors[_curentLevelEditor].InstancedItems);
+        });
+
+        _buttonLoad.onClick.AddListener(() => 
+        {
+            _levelEditors[_curentLevelEditor].Enabled = false;
+            _levelEditors[_curentLevelEditor].LevelHolder.SetActive(false);
+
+            _levelLoader.LoadLevel(out GameObject levelHolder, out List<LevelEditorItem> levelItems);
+            _levelEditors.Add(new LevelEditorGenerator(levelHolder, levelItems));
+            _levelEditors[_curentLevelEditor].Enabled = true;
+            _curentLevelEditor++;
+        });
     }
 
     private void Update()
@@ -85,7 +108,7 @@ public class LevelEditorUI : MonoBehaviour
 
     private void BuildInventoryTabs() 
     {
-        foreach (LevelEditorItemsDB.ItemGroup itemGroup in _itemsDB.ItemGroups)
+        foreach (LevelEditorItemsDB.ItemGroup itemGroup in _levelLoader.ItemDB.ItemGroups)
         {
             Instantiate(_tabPrefab, _inventoryPanel).Build(itemGroup, this);
         }
