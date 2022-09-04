@@ -6,6 +6,8 @@ using UnityEngine;
 public class LevelEditorCamera : MonoBehaviour
 {
     [SerializeField] private float _scrollSens;
+    [SerializeField] private Transform _gridPlane;
+
     private bool _controllEnabled;
     private Vector2 _mouseWheelDownPosition;
     private Camera _camera;
@@ -34,8 +36,19 @@ public class LevelEditorCamera : MonoBehaviour
             _camera.orthographicSize -= Input.mouseScrollDelta.y * _scrollSens;
             _camera.orthographicSize = Mathf.Clamp(_camera.orthographicSize, 2, 30);
         }
+        Vector2 gridSize = CalculateGridScale();
+        _gridPlane.transform.localScale = new Vector3(gridSize.x, 1f, gridSize.y);
     }
 
+
+    private Vector2 CalculateGridScale() 
+    {
+        float aspect = (float)Screen.width / (float)Screen.height;
+        Vector2 size;
+        size.y = _camera.orthographicSize / 5f;
+        size.x = size.y * aspect;
+        return size;
+    }
 
     public void SetActiveControll(bool arg)
     {

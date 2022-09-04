@@ -149,6 +149,7 @@ GameObject:
   - component: {fileID: 5713821207575849521}
   - component: {fileID: 7602764442294606292}
   - component: {fileID: 8379669702493942874}
+  - component: {fileID: 5170608079072044934}
   m_Layer: 5
   m_Name: Inventory Tab
   m_TagString: Untagged
@@ -176,7 +177,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 75, y: 75}
+  m_SizeDelta: {x: 125, y: 125}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8710015954519751373
 MonoBehaviour:
@@ -191,10 +192,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _image: {fileID: 308475443425342644}
+  _buttonImage: {fileID: 5713821207575849521}
   _button: {fileID: 7602764442294606292}
   _title: {fileID: 2119048160652668673}
+  _selectedColor: {r: 1, g: 0.83137256, b: 0.6, a: 1}
   _inventoryPrefab: {fileID: 4138410643246040554, guid: fde24627d22434c43b9f1f446553a8a3, type: 3}
-  _itemButtonPrefab: {fileID: 3083892681532086883, guid: 6f9d092011d13d547ada4dad0c5a6b4e, type: 3}
+  _itemButtonPrefab: {fileID: 3697486589026235430, guid: 6f9d092011d13d547ada4dad0c5a6b4e, type: 3}
 --- !u!222 &5713821207575849522
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -216,7 +219,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.24528301, g: 0.24528301, b: 0.24528301, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -294,6 +297,21 @@ MonoBehaviour:
   _outAnimDuration: 0.25
   _inAnimEase: 1
   _outAnimEase: 27
+--- !u!114 &5170608079072044934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5713821207575849527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.29803923}
+  m_EffectDistance: {x: 10, y: -5}
+  m_UseGraphicAlpha: 1
 --- !u!1 &8151508698051551788
 GameObject:
   m_ObjectHideFlags: 0
@@ -330,7 +348,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -20, y: -20}
+  m_SizeDelta: {x: -50, y: -50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2287044680395602204
 CanvasRenderer:
@@ -353,7 +371,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.26415092, g: 0.26415092, b: 0.26415092, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
