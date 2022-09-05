@@ -100,9 +100,12 @@ public class LevelEditorUI : MonoBehaviour
         {
             Destroy(level.LevelHolder);
             _levelEditors.Remove(level);
-            _curentLevelEditor = _levelEditors[0];
-            _curentLevelEditor.Enabled = true;
-            _curentLevelEditor.LevelHolder.SetActive(true);
+            if (_curentLevelEditor == level)
+            {
+                _curentLevelEditor = _levelEditors[0];
+                _curentLevelEditor.Enabled = true;
+                _curentLevelEditor.LevelHolder.SetActive(true);
+            }
             return true;
         }
         return false;
