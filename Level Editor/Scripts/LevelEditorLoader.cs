@@ -19,7 +19,7 @@ public class LevelEditorLoader : Service
         
     }
 
-    public void SaveLevel(List<LevelEditorItem> instancedItems) 
+    public void SaveLevel(string path, List<LevelEditorItem> instancedItems) 
     {
         List<ItemSerializationBridge> serializeBridges = new List<ItemSerializationBridge>();
         foreach (LevelEditorItem item in instancedItems) 
@@ -32,17 +32,14 @@ public class LevelEditorLoader : Service
         }
 
         string jsonText = JsonConvert.SerializeObject(serializeBridges);
-        string filePath = $"{Application.persistentDataPath}/level.json";
-        File.WriteAllText(filePath, jsonText);
+        File.WriteAllText(path, jsonText);
     }
 
-    public void LoadLevel(out GameObject levelRoot, out List<LevelEditorItem> levelItems) 
+    public void LoadLevel(string path, out GameObject levelRoot, out List<LevelEditorItem> levelItems) 
     {
         levelRoot = new GameObject("level");
         levelItems = new List<LevelEditorItem>();
-
-        string filePath = $"{Application.persistentDataPath}/level.json";
-        string jsonText = File.ReadAllText(filePath);
+        string jsonText = File.ReadAllText(path);
 
         List<ItemSerializationBridge> serializeBridges = JsonConvert.DeserializeObject<List<ItemSerializationBridge>>(jsonText);
         foreach (ItemSerializationBridge bridge in serializeBridges) 

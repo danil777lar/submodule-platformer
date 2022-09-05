@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
+using UnityEditor;
 using Larje.Core.Services.UI;
 using Larje.Core.Services;
 
@@ -16,7 +17,7 @@ public class LevelEditorUI : MonoBehaviour
     [Header("Parts")]
     [SerializeField] private RectTransform _root;
     [SerializeField] private RectTransformEvents _workField;
-     
+
     [Header("Inventory")]
     [SerializeField] private RectTransform _inventoryPanel;
     [SerializeField] private LevelEditorInventoryTab _tabPrefab;
@@ -25,12 +26,17 @@ public class LevelEditorUI : MonoBehaviour
     [SerializeField] private Button _buttonSave;
     [SerializeField] private Button _buttonLoad;
 
-    private int _curentLevelEditor = 0;
+    [Header("File Tabs")]
+    [SerializeField] private LevelEditorFileTab _fileTabPrefab;
+    [SerializeField] private RectTransform _fileTabsHolder;
+
     private LevelEditorLoader _levelLoader;
+    private LevelEditorGenerator _curentLevelEditor;
     private List<LevelEditorGenerator> _levelEditors;
 
     public RectTransform Root => _root;
     public RectTransform WorkField => (RectTransform)_workField.transform;
+    public LevelEditorGenerator CurentLevel => _curentLevelEditor;
 
     public Action CurentItemChanged;
 
@@ -38,8 +44,7 @@ public class LevelEditorUI : MonoBehaviour
     private void Awake()
     {
         _levelEditors = new List<LevelEditorGenerator>();
-        _levelEditors.Add(new LevelEditorGenerator());
-        _levelEditors[_curentLevelEditor].Enabled = true;
+        CreateNewLevel();
     }
 
     private void Start()
@@ -50,67 +55,115 @@ public class LevelEditorUI : MonoBehaviour
         _workField.PointerEnter += (data) => OnPointerStateChanged(true);
         _workField.PointerExit += (data) => OnPointerStateChanged(false);
 
-        _buttonSave.onClick.AddListener(() => 
-        {
-            _levelLoader.SaveLevel(_levelEditors[_curentLevelEditor].InstancedItems);
-        });
-
-        _buttonLoad.onClick.AddListener(() => 
-        {
-            _levelEditors[_curentLevelEditor].Enabled = false;
-            _levelEditors[_curentLevelEditor].LevelHolder.SetActive(false);
-
-            _levelLoader.LoadLevel(out GameObject levelHolder, out List<LevelEditorItem> levelItems);
-            _levelEditors.Add(new LevelEditorGenerator(levelHolder, levelItems));
-            _levelEditors[_curentLevelEditor].Enabled = true;
-            _curentLevelEditor++;
-        });
+        _buttonSave.onClick.AddListener(SaveLevel);
+        _buttonLoad.onClick.AddListener(OpenLevel);
     }
 
     private void Update()
     {
-        _levelEditors[_curentLevelEditor].ComputeTool();
+        _curentLevelEditor.ComputeTool();
     }
 
 
-    public void SetCurentItem(LevelEditorItem item) 
+    public void ChooseLevel(LevelEditorGenerator level)
     {
-        _levelEditors[_curentLevelEditor].CurrentItem = item;
+        if (level != _curentLevelEditor)
+        {
+            _curentLevelEditor.Enabled = false;
+            _curentLevelEditor.LevelHolder.SetActive(false);
+
+            _curentLevelEditor = level;
+            _curentLevelEditor.Enabled = true;
+            _curentLevelEditor.LevelHolder.SetActive(true);
+        }
+    }
+
+    public void SetCurentItem(LevelEditorItem item)
+    {
+        _curentLevelEditor.CurrentItem = item;
         CurentItemChanged?.Invoke();
     }
 
     public void SetCurentTool(LevelEditorToolType tool)
     {
-        _levelEditors[_curentLevelEditor].CurrentTool = tool;
+        _curentLevelEditor.CurrentTool = tool;
     }
 
-    public void SetThicknes(int thicknes) 
+    public void SetThicknes(int thicknes)
     {
-        _levelEditors[_curentLevelEditor].Thicknes = thicknes;
+        _curentLevelEditor.Thicknes = thicknes;
     }
 
-    public LevelEditorToolType GetCurentTool() 
+    public bool CloseLevel(LevelEditorGenerator level)
     {
-        return _levelEditors[_curentLevelEditor].CurrentTool;
+        if (_levelEditors.Count > 1)
+        {
+            Destroy(level.LevelHolder);
+            _levelEditors.Remove(level);
+            _curentLevelEditor = _levelEditors[0];
+            _curentLevelEditor.Enabled = true;
+            _curentLevelEditor.LevelHolder.SetActive(true);
+            return true;
+        }
+        return false;
     }
 
-    public LevelEditorItem GetCurentItem() 
+    public LevelEditorToolType GetCurentTool()
     {
-        return _levelEditors[_curentLevelEditor].CurrentItem;
+        return _curentLevelEditor.CurrentTool;
     }
 
-
-    private void OnPointerStateChanged(bool arg) 
+    public LevelEditorItem GetCurentItem()
     {
-        _levelEditors[_curentLevelEditor].ControllEnabled = arg;
+        return _curentLevelEditor.CurrentItem;
+    }
+
+    private void OnPointerStateChanged(bool arg)
+    {
+        _curentLevelEditor.ControllEnabled = arg;
         _levelEditorCamera.SetActiveControll(arg);
     }
 
-    private void BuildInventoryTabs() 
+    private void BuildInventoryTabs()
     {
         foreach (LevelEditorItemsDB.ItemGroup itemGroup in _levelLoader.ItemDB.ItemGroups)
         {
             Instantiate(_tabPrefab, _inventoryPanel).Build(itemGroup, this);
         }
     }
+
+    private void CreateNewLevel()
+    {
+        LevelEditorGenerator level = new LevelEditorGenerator();
+        _levelEditors.Add(level);
+        _curentLevelEditor = level;
+        _curentLevelEditor.Enabled = true;
+        CreateFileTab(level);
+    }
+
+    private void OpenLevel()
+    {
+        string path = EditorUtility.OpenFilePanel("", "", "");
+        _curentLevelEditor.Enabled = false;
+        _curentLevelEditor.LevelHolder.SetActive(false);
+
+        _levelLoader.LoadLevel(path, out GameObject levelHolder, out List<LevelEditorItem> levelItems);
+        LevelEditorGenerator level = new LevelEditorGenerator(levelHolder, levelItems);
+        _curentLevelEditor = level;
+        _levelEditors.Add(level);
+        _curentLevelEditor.Enabled = true;
+        CreateFileTab(level);
+    }
+
+    private void SaveLevel()
+    {
+        string path = EditorUtility.SaveFilePanel("", "", $"{_curentLevelEditor.LevelHolder.name}.json", "");
+        _levelLoader.SaveLevel(path, _curentLevelEditor.InstancedItems);
+    }
+
+    private void CreateFileTab(LevelEditorGenerator level)
+    {
+        Instantiate(_fileTabPrefab, _fileTabsHolder).Build(level, this);
+    }
+
 }
