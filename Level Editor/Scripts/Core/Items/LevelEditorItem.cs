@@ -34,9 +34,32 @@ public abstract class LevelEditorItem : MonoBehaviour
         return result;
     }
 
+    public bool HasIntersectionWith(List<Vector2Int> cells) 
+    {
+        List<Vector2Int> selfCells = GetEngagedCells(Position);
+        foreach (Vector2Int cell in cells) 
+        {
+            if (selfCells.Contains(cell))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
-    abstract public void Place(List<LevelEditorItem> spawnedItems, Vector2Int position);
-    abstract public void Remove(List<LevelEditorItem> spawnedItems);
+
+    virtual public void Place(List<LevelEditorItem> spawnedItems, Vector2Int position) 
+    {
+        Position = position;
+        transform.position = new Vector3(position.x, position.y, -_levelLayer);
+        spawnedItems.Add(this);
+    }
+    virtual public void Remove(List<LevelEditorItem> spawnedItems) 
+    {
+        spawnedItems.Remove(this);
+        Destroy(gameObject);
+    }
+
     abstract public bool CanBePlaced(List<LevelEditorItem> spawnedItems, Vector2Int position);
     abstract public Sprite GetPreview();
 }
