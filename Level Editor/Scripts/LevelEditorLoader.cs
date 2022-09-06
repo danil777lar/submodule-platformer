@@ -10,13 +10,18 @@ using Larje.Core.Services;
 public class LevelEditorLoader : Service
 {
     [SerializeField] private LevelEditorItemsDB _itemDB;
+    [SerializeField] private string _localLevelsFolder;
 
     public LevelEditorItemsDB ItemDB => _itemDB;
 
 
     public override void Init()
     {
-        
+        string fullPah = $"{Application.persistentDataPath}/{_localLevelsFolder}";
+        if (!Directory.Exists(fullPah)) 
+        {
+            Directory.CreateDirectory(fullPah);
+        }
     }
 
     public void SaveLevel(string path, List<LevelEditorItem> instancedItems) 
@@ -48,6 +53,16 @@ public class LevelEditorLoader : Service
             LevelEditorItem itemInstance = Instantiate(_itemDB.GetItemByPath(bridge.ItemPath), levelRoot.transform);
             itemInstance.Place(levelItems, position);
         }
+    }
+
+    public List<string> GetLocalLevelsList() 
+    {
+        List<string> levels = new List<string>(Directory.GetFiles($"{Application.persistentDataPath}/{_localLevelsFolder}"));
+        for (int i = 0; i < levels.Count; i++) 
+        {
+            levels[i] = levels[i];
+        }
+        return levels;
     }
 
 
